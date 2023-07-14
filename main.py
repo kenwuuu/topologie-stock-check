@@ -17,6 +17,8 @@ your_number = os.environ['your_number']
 # URL of the page containing the HTML
 url = "https://topologie.com/collections/the-bags/products/flat-sacoche?variant=39841883226172"
 
+print("Loaded inventory check...")
+
 
 def get_page_content():
     # Send a GET request to the URL
@@ -70,5 +72,7 @@ def run_inventory_check():
 
 # run every hour
 while True:
+    # print utc time
+    print("Checking inventory. Time: " + time.strftime("%H:%M:%S", time.gmtime()))
     run_inventory_check()
     time.sleep(60 * 60)
