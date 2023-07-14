@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO)  # Set the desired log level
 
 # Print last 4 digits of phone numbers
 logging.info("Loaded inventory check...")
-logging.info("Twilio number: " + twilio_number[-4:])
+logging.info("Your number: " + your_number[-4:])
 
 
 def get_page_content():
