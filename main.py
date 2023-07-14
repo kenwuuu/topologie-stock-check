@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from twilio.rest import Client
 import time
 import os
-
+import logging
 
 # Twilio account SID and auth token
 account_sid = os.environ['account_sid']
@@ -17,7 +17,12 @@ your_number = os.environ['your_number']
 # URL of the page containing the HTML
 url = "https://topologie.com/collections/the-bags/products/flat-sacoche?variant=39841883226172"
 
-print("Loaded inventory check...")
+# Configure the logger
+logging.basicConfig(level=logging.INFO)  # Set the desired log level
+
+# Print last 4 digits of phone numbers
+logging.info("Loaded inventory check...")
+logging.info("Twilio number: " + twilio_number[-4:])
 
 
 def get_page_content():
@@ -44,13 +49,13 @@ def check_inventory(soup):
     variants = script_json["variants"]
     for variant in variants:
         if variant["available"]:
-            print(f"{variant['title']} available")
+            logging.info(f"{variant['title']} available")
 
             # If Sand is available, send a text message
             if variant["title"] == "Sand":
                 send_text_message("The Sand variant is available!")
         else:
-            print(f"{variant['title']} not available")
+            logging.info(f"{variant['title']} not available")
 
 
 def send_text_message(message):
@@ -61,7 +66,7 @@ def send_text_message(message):
         from_=twilio_number,
         to=your_number
     )
-    print("Text message sent!")
+    logging.info("Text message sent!")
 
 
 def run_inventory_check():
@@ -70,9 +75,9 @@ def run_inventory_check():
     check_inventory(soup)
 
 
-# run every hour
+# Run every hour
 while True:
-    # print utc time
-    print("Checking inventory. Time: " + time.strftime("%H:%M:%S", time.gmtime()))
+    # Print UTC time
+    logging.info("Checking inventory. Time: " + time.strftime("%H:%M:%S", time.gmtime()))
     run_inventory_check()
     time.sleep(60 * 60)
