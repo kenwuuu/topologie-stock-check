@@ -58,11 +58,10 @@ def run_inventory_check():
         send_text_message(f"{item_name} available now", item_name)
 
 
-# Run every hour
 while True:
     # Print UTC time
     logging.info(
         "Checking inventory. Time: " + time.strftime("%H:%M:%S", time.gmtime())
     )
     run_inventory_check()
-    time.sleep(60 * 5)  # seconds * minutes
+    time.sleep(60 * 1)  # seconds * minutes
