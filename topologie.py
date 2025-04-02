@@ -26,6 +26,7 @@ def _search_json_for_product_stock(desired_item_name, products_json):
 
             if desired_item_name in variant["title"]:
                 in_stock = True
+                logging.info("^^^^^^^^^^^^^^^^^^^^^^^^^^")
         else:
             logging.info(f"{variant['title']} not available")
     return in_stock
