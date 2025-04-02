@@ -7,12 +7,12 @@ import os
 import logging
 
 # Twilio account SID and auth token
-account_sid = os.environ['account_sid']
-auth_token = os.environ['auth_token']
+account_sid = os.environ["account_sid"]
+auth_token = os.environ["auth_token"]
 
 # Twilio phone number and your own phone number
-twilio_number = os.environ['twilio_number']
-your_number = os.environ['your_number']
+twilio_number = os.environ["twilio_number"]
+your_number = os.environ["your_number"]
 
 # URL of the page containing the HTML
 url = "https://topologie.com/collections/the-bags/products/flat-sacoche?variant=39841883226172"
@@ -39,7 +39,17 @@ def parse_page_content(content):
 
 def check_inventory(soup):
     # List of available colors
-    colors = ["Dry Black", "Moss", "Slate", "Sand", "Mustard", "Black", "Bronze", "Future Blue", "Peach"]
+    colors = [
+        "Dry Black",
+        "Moss",
+        "Slate",
+        "Sand",
+        "Mustard",
+        "Black",
+        "Bronze",
+        "Future Blue",
+        "Peach",
+    ]
 
     # Find the script with the product JSON
     script = soup.find("script", {"data-product-json": True})
@@ -61,11 +71,7 @@ def check_inventory(soup):
 def send_text_message(message):
     # Send a text message
     client = Client(account_sid, auth_token)
-    message = client.messages.create(
-        body=message,
-        from_=twilio_number,
-        to=your_number
-    )
+    message = client.messages.create(body=message, from_=twilio_number, to=your_number)
     logging.info("Text message sent!")
 
 
@@ -78,6 +84,8 @@ def run_inventory_check():
 # Run every hour
 while True:
     # Print UTC time
-    logging.info("Checking inventory. Time: " + time.strftime("%H:%M:%S", time.gmtime()))
+    logging.info(
+        "Checking inventory. Time: " + time.strftime("%H:%M:%S", time.gmtime())
+    )
     run_inventory_check()
     time.sleep(60 * 60)
