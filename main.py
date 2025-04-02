@@ -64,4 +64,4 @@ while True:
         "Checking inventory. Time: " + time.strftime("%H:%M:%S", time.gmtime())
     )
     run_inventory_check()
-    time.sleep(60 * 1)  # seconds * minutes
+    time.sleep(60 * 60)  # seconds * minutes
