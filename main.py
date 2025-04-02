@@ -1,9 +1,7 @@
 import json
 import requests
 from bs4 import BeautifulSoup
-from twilio.rest import Client
 import time
-import os
 import logging
 
 # URL of the page containing the HTML
@@ -44,6 +42,7 @@ def check_inventory(soup, desired_item_name):
 
     return False
 
+
 def send_text_message(message, item_name):
     # Send a text message
     # client = Client(account_sid, auth_token)
@@ -66,4 +65,4 @@ while True:
         "Checking inventory. Time: " + time.strftime("%H:%M:%S", time.gmtime())
     )
     run_inventory_check()
-    time.sleep(60 * 5) # seconds * minutes
+    time.sleep(60 * 5)  # seconds * minutes
