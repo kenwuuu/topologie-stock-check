@@ -6,23 +6,11 @@ import time
 import os
 import logging
 
-# Twilio account SID and auth token
-account_sid = os.environ["account_sid"]
-auth_token = os.environ["auth_token"]
-
-# Twilio phone number and your own phone number
-twilio_number = os.environ["twilio_number"]
-your_number = os.environ["your_number"]
-
 # URL of the page containing the HTML
 url = "https://topologie.com/collections/the-bags/products/flat-sacoche?variant=39841883226172"
 
 # Configure the logger
 logging.basicConfig(level=logging.INFO)  # Set the desired log level
-
-# Print last 4 digits of phone numbers
-logging.info("Loaded inventory check...")
-logging.info("Your number: " + your_number[-4:])
 
 
 def get_page_content():
@@ -37,20 +25,7 @@ def parse_page_content(content):
     return soup
 
 
-def check_inventory(soup):
-    # List of available colors
-    colors = [
-        "Dry Black",
-        "Moss",
-        "Slate",
-        "Sand",
-        "Mustard",
-        "Black",
-        "Bronze",
-        "Future Blue",
-        "Peach",
-    ]
-
+def check_inventory(soup, desired_item_name):
     # Find the script with the product JSON
     script = soup.find("script", {"data-product-json": True})
     script_json = json.loads(script.string)
@@ -62,23 +37,26 @@ def check_inventory(soup):
             logging.info(f"{variant['title']} available")
 
             # If Sand is available, send a text message
-            if variant["title"] == "Sand":
-                send_text_message("The Sand variant is available!")
+            if desired_item_name in variant["title"]:
+                return desired_item_name
         else:
             logging.info(f"{variant['title']} not available")
 
+    return False
 
-def send_text_message(message):
+def send_text_message(message, item_name):
     # Send a text message
-    client = Client(account_sid, auth_token)
-    message = client.messages.create(body=message, from_=twilio_number, to=your_number)
-    logging.info("Text message sent!")
+    # client = Client(account_sid, auth_token)
+    # message = client.messages.create(body=message, from_=twilio_number, to=your_number)
+    logging.info(f"Text message for {item_name} sent!")
 
 
 def run_inventory_check():
     content = get_page_content()
     soup = parse_page_content(content)
-    check_inventory(soup)
+    item_name = check_inventory(soup, "Moss")
+    if item_name:
+        send_text_message(f"{item_name} available now", item_name)
 
 
 # Run every hour
@@ -88,4 +66,4 @@ while True:
         "Checking inventory. Time: " + time.strftime("%H:%M:%S", time.gmtime())
     )
     run_inventory_check()
-    time.sleep(60 * 60)
+    time.sleep(60 * 5) # seconds * minutes
