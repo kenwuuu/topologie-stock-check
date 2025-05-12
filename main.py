@@ -28,9 +28,6 @@ def check_topologie():
         send_text_message("lorem ipsum")
 
 
-while True:
-    log_start_of_run()
+log_start_of_run()
 
-    check_topologie()
-
-    time.sleep(60 * 60)  # seconds * minutes
+check_topologie()
