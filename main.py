@@ -1,48 +1,26 @@
-from fastapi import FastAPI, Form, Request, HTTPException
-from fastapi.responses import HTMLResponse, PlainTextResponse
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI, Form, HTTPException
+from fastapi.responses import PlainTextResponse
 from typing import Annotated
 
 app = FastAPI()
-templates = Jinja2Templates(directory="templates")
 FILE_PATH = "my_data.txt"
 
-@app.get("/", response_class=HTMLResponse)
-async def homepage(request: Request):
+@app.post("/write/")
+async def write_to_file(line: Annotated[str, Form()]):
     """
-    Serves the main webpage with the form and file content.
-    """
-    try:
-        with open(FILE_PATH, "r") as f:
-            contents = f.read()
-    except FileNotFoundError:
-        contents = ""
-    return templates.TemplateResponse("index.html", {"request": request, "file_contents": contents})
-
-@app.post("/write/", response_class=HTMLResponse)
-async def write_to_file(request: Request, line: Annotated[str, Form()]):
-    """
-    Appends a new line to the file and reloads the webpage.
+    Appends a new line to the specified file.
     """
     try:
         with open(FILE_PATH, "a") as f:
             f.write(line + "\n")
-        success_message = "Line appended successfully!"
+        return {"message": f"Line appended to {FILE_PATH}"}
     except Exception as e:
-        success_message = f"Error writing to file: {e}"
-
-    try:
-        with open(FILE_PATH, "r") as f:
-            contents = f.read()
-    except FileNotFoundError:
-        contents = ""
-
-    return templates.TemplateResponse("index.html", {"request": request, "file_contents": contents, "message": success_message})
+        raise HTTPException(status_code=500, detail=f"Error writing to file: {e}")
 
 @app.get("/read/", response_class=PlainTextResponse)
 async def read_file():
     """
-    Returns the raw content of the file as plain text (still useful for debugging or other tools).
+    Returns the entire content of the specified file.
     """
     try:
         with open(FILE_PATH, "r") as f:
